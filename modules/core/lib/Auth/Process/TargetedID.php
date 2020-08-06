@@ -15,8 +15,8 @@ use SimpleSAML\Utils;
  * Filter to generate the eduPersonTargetedID attribute.
  *
  * By default, this filter will generate the ID based on the UserID of the current user.
- * This is by default generated from the attribute configured in 'userid.attribute' in the
- * metadata. If this attribute isn't present, the userid will be generated from the
+ * This is by default generated from the attribute configured in the config of this authproc-filter.
+ * If this configuration isn't present, the userid will be generated from the
  * eduPersonPrincipalName attribute, if it is present.
  *
  * It is possible to generate this attribute from another attribute by specifying this attribute
@@ -56,6 +56,19 @@ class TargetedID extends Auth\ProcessingFilter
      */
     private $generateNameId = false;
 
+    /**
+     * The name of the attribute that holds a unique identifier for the user
+     *
+     * @var string
+     */
+    private $identifyingAttribute;
+
+    /**
+     * @var \SimpleSAML\Utils\Config|string
+     * @psalm-var \SimpleSAML\Utils\Config|class-string
+     */
+    protected $configUtils = Utils\Config::class;
+
 
     /**
      * Initialize this filter.
@@ -80,6 +93,21 @@ class TargetedID extends Auth\ProcessingFilter
                 throw new Exception('Invalid value of \'nameId\'-option to core:TargetedID filter.');
             }
         }
+
+        Assert::keyExists($config, 'identifyingAttribute', "Missing mandatory 'identifyingAttribute' config setting.");
+        Assert::stringNotEmpty($config['identifyingAttribute'], "Consent: 'identifyingAttribute' must be a non-empty string.");
+        $this->identifyingAttribute = $config['identifyingAttribute'];
+    }
+
+
+    /**
+     * Inject the \SimpleSAML\Utils\Config dependency.
+     *
+     * @param \SimpleSAML\Utils\Config $configUtils
+     */
+    public function setConfigUtils(Utils\Config $configUtils): void
+    {
+        $this->configUtils = $configUtils;
     }
 
 
@@ -94,13 +122,8 @@ class TargetedID extends Auth\ProcessingFilter
         Assert::keyExists($state, 'Attributes');
 
         if ($this->attribute === null) {
-            if (!array_key_exists('UserID', $state)) {
-                throw new Exception('core:TargetedID: Missing UserID for this user. Please' .
-                    ' check the \'userid.attribute\' option in the metadata against the' .
-                    ' attributes provided by the authentication source.');
-            }
-
-            $userID = $state['UserID'];
+            Assert::keyExists($state['Attributes'], $this->identifyingAttribute, "Missing mandatory '%s' attribute.");
+            $userID = $state['Attributes'][$this->identifyingAttribute];
         } else {
             if (!array_key_exists($this->attribute, $state['Attributes'])) {
                 throw new Exception('core:TargetedID: Missing attribute \'' . $this->attribute .
@@ -111,7 +134,7 @@ class TargetedID extends Auth\ProcessingFilter
         }
 
 
-        $secretSalt = Utils\Config::getSecretSalt();
+        $secretSalt = $this->configUtils::getSecretSalt();
 
         if (array_key_exists('Source', $state)) {
             $srcID = self::getEntityId($state['Source']);
