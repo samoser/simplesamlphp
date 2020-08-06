@@ -69,6 +69,7 @@ class TargetedIDTest extends TestCase
         $attributes = $result['Attributes'];
         $this->assertArrayHasKey('eduPersonTargetedID', $attributes);
         $this->assertRegExp('/^[0-9a-f]{40}$/', $attributes['eduPersonTargetedID'][0]);
+//        $this->assertMatchesRegularExpression('/^[0-9a-f]{40}$/', $attributes['eduPersonTargetedID'][0]);
     }
 
 
@@ -98,6 +99,7 @@ class TargetedIDTest extends TestCase
         $attributes = $result['Attributes'];
         $this->assertArrayHasKey('eduPersonTargetedID', $attributes);
         $this->assertRegExp('/^[0-9a-f]{40}$/', $attributes['eduPersonTargetedID'][0]);
+//        $this->assertMatchesRegularExpression('/^[0-9a-f]{40}$/', $attributes['eduPersonTargetedID'][0]);
     }
 
 
@@ -105,35 +107,36 @@ class TargetedIDTest extends TestCase
      * Test with nameId config option set.
      * @return void
      */
-//    public function testNameIdGeneration()
-//    {
-//        $config = [
-//            'nameId' => true,
-//            'identifyingAttribute' => 'eduPersonPrincipalName',
-//        ];
-//        $request = array(
-//            'Attributes' => ['eduPersonPrincipalName' => '<saml:NameID xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" NameQualifier="urn:example:src:id" SPNameQualifier="joe" Format="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent">joe</saml:NameID>'],
-//            'Source' => [
-//                'metadata-set' => 'saml20-idp-hosted',
-//                'entityid' => 'urn:example:src:id',
-//            ],
-//            'Destination' => [
-//                'metadata-set' => 'saml20-sp-remote',
-//                'entityid' => 'joe',
-//            ],
-//        );
-//        $result = self::processFilter($config, $request);
-//        $attributes = $result['Attributes'];
-//        $this->assertArrayHasKey('eduPersonTargetedID', $attributes);
-//        $this->assertRegExp(
-//            '#^<saml:NameID xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" NameQualifier="urn:example:src:id"' .
-//            ' SPNameQualifier="joe"' .
-//            ' Format="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent">joe</saml:NameID>$#',
-//            $attributes['eduPersonPrincipalName'][0]
-//        );
-//    }
-//
-//
+    public function testNameIdGeneration()
+    {
+        $config = [
+            'nameId' => true,
+            'identifyingAttribute' => 'eduPersonPrincipalName',
+        ];
+        $request = array(
+            'Attributes' => ['eduPersonPrincipalName' => 'joe', 'eduPersonTargetedID' => '<saml:NameID xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" NameQualifier="urn:example:src:id" SPNameQualifier="joe" Format="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent">joe</saml:NameID>'],
+            'Source' => [
+                'metadata-set' => 'saml20-idp-hosted',
+                'entityid' => 'urn:example:src:id',
+            ],
+            'Destination' => [
+                'metadata-set' => 'saml20-sp-remote',
+                'entityid' => 'joe',
+            ],
+        );
+        $result = self::processFilter($config, $request);
+        $attributes = $result['Attributes'];
+        $this->assertArrayHasKey('eduPersonTargetedID', $attributes);
+        $this->assertRegExp(
+//        $this->assertMatchesRegularExpression(
+            '#^<saml:NameID xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" NameQualifier="urn:example:src:id"' .
+            ' SPNameQualifier="joe"' .
+            ' Format="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent">3197ec15e3ff3851063bc5c91d35c1bd9ca2b903</saml:NameID>$#',
+            strval($attributes['eduPersonTargetedID'][0])
+        );
+    }
+
+
     /**
      * Test that Id is the same for subsequent invocations with same input.
      * @return void
@@ -161,8 +164,8 @@ class TargetedIDTest extends TestCase
             $tid = $attributes['eduPersonTargetedID'][0];
             if (isset($prevtid)) {
                 $this->assertEquals($prevtid, $tid);
-                $prevtid = $tid;
             }
+            $prevtid = $tid;
         }
     }
 

@@ -932,8 +932,9 @@ class SAML2
         Configuration $spMetadata,
         array &$state
     ): ?string {
-        $attribute = $spMetadata->getString('simplesaml.nameidattribute', null);
-        if ($attribute === null) {
+        $attribute = $spMetadata->getString('simplesaml.nameidattribute');
+
+/*        if ($attribute === null) {
             $attribute = $idpMetadata->getString('simplesaml.nameidattribute', null);
             if ($attribute === null) {
                 if (!isset($state['UserID'])) {
@@ -955,7 +956,7 @@ class SAML2
                 return hash('sha1', $uidData);
             }
         }
-
+*/
         $attributes = $state['Attributes'];
         if (!array_key_exists($attribute, $attributes)) {
             Logger::error('Unable to add NameID: Missing ' . var_export($attribute, true) .

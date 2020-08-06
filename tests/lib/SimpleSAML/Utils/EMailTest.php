@@ -83,6 +83,10 @@ class EMailTest extends ClearStateTestCase
         $this->assertRegexp('/(text-){6}/', $result);
         $this->assertRegexp('/(key-){6}/', $result);
         $this->assertRegexp('/(value-){6}/', $result);
+//        $this->assertMatchesRegularExpression('/(subject-){6}/', $result);
+//        $this->assertMatchesRegularExpression('/(text-){6}/', $result);
+//        $this->assertMatchesRegularExpression('/(key-){6}/', $result);
+//        $this->assertMatchesRegularExpression('/(value-){6}/', $result);
     }
 
 
