@@ -95,7 +95,10 @@ class TargetedID extends Auth\ProcessingFilter
         }
 
         Assert::keyExists($config, 'identifyingAttribute', "Missing mandatory 'identifyingAttribute' config setting.");
-        Assert::stringNotEmpty($config['identifyingAttribute'], "Consent: 'identifyingAttribute' must be a non-empty string.");
+        Assert::stringNotEmpty(
+            $config['identifyingAttribute'],
+            "Consent: 'identifyingAttribute' must be a non-empty string."
+        );
         $this->identifyingAttribute = $config['identifyingAttribute'];
     }
 

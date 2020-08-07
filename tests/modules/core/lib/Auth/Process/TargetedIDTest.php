@@ -114,7 +114,10 @@ class TargetedIDTest extends TestCase
             'identifyingAttribute' => 'eduPersonPrincipalName',
         ];
         $request = array(
-            'Attributes' => ['eduPersonPrincipalName' => 'joe', 'eduPersonTargetedID' => '<saml:NameID xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" NameQualifier="urn:example:src:id" SPNameQualifier="joe" Format="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent">joe</saml:NameID>'],
+            'Attributes' => [
+                'eduPersonPrincipalName' => 'joe',
+                'eduPersonTargetedID' => '<saml:NameID xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion" NameQualifier="urn:example:src:id" SPNameQualifier="joe" Format="urn:oasis:names:tc:SAML:2.0:nameid-format:persistent">joe</saml:NameID>'
+            ],
             'Source' => [
                 'metadata-set' => 'saml20-idp-hosted',
                 'entityid' => 'urn:example:src:id',
